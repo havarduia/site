@@ -126,6 +126,7 @@
     body,
     .nav-shell,
     .hero-panel,
+    .hardware-card,
     .feature-card,
     .server-stage,
     .server-panel,
@@ -544,6 +545,109 @@
       font-size: 0.75rem;
     }
 
+    .hardware-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface-strong);
+      padding: 12px;
+      margin-top: 2px;
+    }
+
+    .hardware-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .hardware-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--ink-soft);
+    }
+
+    .hardware-health {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.67rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      border-radius: 999px;
+      padding: 3px 7px;
+      border: 1px solid var(--line);
+      color: var(--ink-soft);
+      background: var(--surface-tab);
+      transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .hardware-health.health-online {
+      color: var(--teal);
+      border-color: rgba(15, 142, 144, 0.3);
+      background: rgba(15, 142, 144, 0.1);
+    }
+
+    .hardware-health.health-checking {
+      color: var(--ink-soft);
+      border-color: var(--line);
+      background: var(--surface-tab);
+    }
+
+    .hardware-health.health-error {
+      color: #c4471d;
+      border-color: rgba(196, 71, 29, 0.35);
+      background: rgba(196, 71, 29, 0.12);
+    }
+
+    .hardware-health.health-unknown {
+      color: #b88012;
+      border-color: rgba(184, 128, 18, 0.36);
+      background: rgba(184, 128, 18, 0.12);
+    }
+
+    .hardware-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .hardware-item {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-lite);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-height: 52px;
+    }
+
+    .hardware-item strong {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--ink-soft);
+      font-weight: 500;
+    }
+
+    .hardware-item span {
+      font-size: 0.84rem;
+      color: var(--ink);
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .hardware-foot {
+      margin-top: 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--ink-soft);
+    }
+
     .status {
       font-size: 0.72rem;
       color: var(--teal);
@@ -857,7 +961,8 @@
       }
 
       .metric-grid,
-      .info-grid {
+      .info-grid,
+      .hardware-grid {
         grid-template-columns: 1fr;
       }
 
@@ -934,10 +1039,6 @@
               <span>Core Services</span>
             </article>
             <article class="metric">
-              <strong>24/7</strong>
-              <span>Availability</span>
-            </article>
-            <article class="metric">
               <strong>1.21</strong>
               <span>MC Version</span>
             </article>
@@ -964,6 +1065,40 @@
               </div>
               <span class="status status-checking" id="status-map">Checking</span>
             </article>
+          </div>
+
+          <div class="hardware-card" id="hardware-card">
+            <div class="hardware-head">
+              <span class="hardware-title">Hardware Telemetry</span>
+              <span class="hardware-health health-checking" id="hardware-health">Checking</span>
+            </div>
+            <div class="hardware-grid">
+              <div class="hardware-item">
+                <strong>CPU Clock</strong>
+                <span id="hw-cpu-clock">N/A</span>
+              </div>
+              <div class="hardware-item">
+                <strong>CPU Load</strong>
+                <span id="hw-cpu-load">N/A</span>
+              </div>
+              <div class="hardware-item">
+                <strong>CPU Temp</strong>
+                <span id="hw-cpu-temp">N/A</span>
+              </div>
+              <div class="hardware-item">
+                <strong>RAM</strong>
+                <span id="hw-ram">N/A</span>
+              </div>
+              <div class="hardware-item">
+                <strong>Disk</strong>
+                <span id="hw-disk">N/A</span>
+              </div>
+              <div class="hardware-item">
+                <strong>Uptime</strong>
+                <span id="hw-uptime">N/A</span>
+              </div>
+            </div>
+            <div class="hardware-foot">Last update: <span id="hw-last-update">never</span></div>
           </div>
         </aside>
       </section>
@@ -1300,6 +1435,224 @@
 
     refreshLiveStatus();
     window.setInterval(refreshLiveStatus, STATUS_REFRESH_MS);
+
+    const HARDWARE_REFRESH_MS = 15000;
+    const HARDWARE_TIMEOUT_MS = 7000;
+    const hardwareEndpoint = window.location.protocol === 'file:' ? 'https://kramsen.no/api/hardware' : '/api/hardware';
+
+    const hardwareHealth = document.getElementById('hardware-health');
+    const hardwareLastUpdate = document.getElementById('hw-last-update');
+    const hardwareFields = {
+      cpuClock: document.getElementById('hw-cpu-clock'),
+      cpuLoad: document.getElementById('hw-cpu-load'),
+      cpuTemp: document.getElementById('hw-cpu-temp'),
+      ram: document.getElementById('hw-ram'),
+      disk: document.getElementById('hw-disk'),
+      uptime: document.getElementById('hw-uptime')
+    };
+    let hasHardwareData = false;
+
+    function readNested(source, path) {
+      return path.split('.').reduce((accumulator, key) => {
+        if (accumulator && typeof accumulator === 'object' && key in accumulator) {
+          return accumulator[key];
+        }
+        return undefined;
+      }, source);
+    }
+
+    function pickNumber(source, paths) {
+      for (const path of paths) {
+        const value = readNested(source, path);
+        const numberValue = Number(value);
+        if (Number.isFinite(numberValue)) {
+          return numberValue;
+        }
+      }
+      return null;
+    }
+
+    function formatBytes(bytes) {
+      if (!Number.isFinite(bytes) || bytes < 0) {
+        return 'N/A';
+      }
+
+      const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+      let value = bytes;
+      let unitIndex = 0;
+      while (value >= 1024 && unitIndex < units.length - 1) {
+        value /= 1024;
+        unitIndex += 1;
+      }
+
+      const precision = value >= 100 ? 0 : (value >= 10 ? 1 : 2);
+      return value.toFixed(precision) + ' ' + units[unitIndex];
+    }
+
+    function formatPercent(value) {
+      if (!Number.isFinite(value)) {
+        return 'N/A';
+      }
+
+      const normalized = value <= 1 ? value * 100 : value;
+      const bounded = Math.max(0, Math.min(100, normalized));
+      return bounded.toFixed(1) + '%';
+    }
+
+    function formatClock(clockMhz, clockGhz) {
+      if (Number.isFinite(clockGhz)) {
+        return clockGhz.toFixed(2) + ' GHz';
+      }
+
+      if (!Number.isFinite(clockMhz)) {
+        return 'N/A';
+      }
+
+      if (clockMhz >= 1000) {
+        return (clockMhz / 1000).toFixed(2) + ' GHz';
+      }
+
+      return Math.round(clockMhz) + ' MHz';
+    }
+
+    function formatTemp(celsius) {
+      if (!Number.isFinite(celsius)) {
+        return 'N/A';
+      }
+      return celsius.toFixed(1) + ' C';
+    }
+
+    function formatUptime(seconds) {
+      if (!Number.isFinite(seconds) || seconds < 0) {
+        return 'N/A';
+      }
+
+      const days = Math.floor(seconds / 86400);
+      const hours = Math.floor((seconds % 86400) / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+
+      if (days > 0) {
+        return days + 'd ' + hours + 'h';
+      }
+      if (hours > 0) {
+        return hours + 'h ' + minutes + 'm';
+      }
+      return minutes + 'm';
+    }
+
+    function setHardwareField(element, text) {
+      if (element) {
+        element.textContent = text;
+      }
+    }
+
+    function setHardwareHealth(state, label) {
+      if (!hardwareHealth) {
+        return;
+      }
+
+      hardwareHealth.classList.remove('health-online', 'health-checking', 'health-error', 'health-unknown');
+      hardwareHealth.classList.add('health-' + state);
+      hardwareHealth.textContent = label;
+    }
+
+    function markHardwareUnavailable(reason) {
+      setHardwareField(hardwareFields.cpuClock, 'N/A');
+      setHardwareField(hardwareFields.cpuLoad, 'N/A');
+      setHardwareField(hardwareFields.cpuTemp, 'N/A');
+      setHardwareField(hardwareFields.ram, 'N/A');
+      setHardwareField(hardwareFields.disk, 'N/A');
+      setHardwareField(hardwareFields.uptime, 'N/A');
+      if (hardwareLastUpdate) {
+        hardwareLastUpdate.textContent = reason;
+      }
+    }
+
+    function renderHardwarePayload(payload) {
+      const cpuClockMhz = pickNumber(payload, ['cpu.clockMHz', 'cpu.clockMhz', 'cpu.frequencyMHz', 'cpu.frequencyMhz', 'cpu.currentClockMhz']);
+      const cpuClockGhz = pickNumber(payload, ['cpu.clockGHz', 'cpu.clockGhz', 'cpu.frequencyGHz', 'cpu.frequencyGhz']);
+      const cpuLoad = pickNumber(payload, ['cpu.usagePercent', 'cpu.usage', 'cpu.loadPercent', 'cpu.load']);
+      const cpuTemp = pickNumber(payload, ['cpu.temperatureC', 'cpu.temperature', 'cpu.tempC', 'cpu.temp']);
+
+      const ramUsed = pickNumber(payload, ['memory.usedBytes', 'memory.used', 'ram.usedBytes', 'ram.used']);
+      const ramTotal = pickNumber(payload, ['memory.totalBytes', 'memory.total', 'ram.totalBytes', 'ram.total']);
+      const diskUsed = pickNumber(payload, ['disk.usedBytes', 'disk.used', 'storage.usedBytes', 'storage.used']);
+      const diskTotal = pickNumber(payload, ['disk.totalBytes', 'disk.total', 'storage.totalBytes', 'storage.total']);
+      const uptimeSec = pickNumber(payload, ['uptimeSec', 'uptimeSeconds', 'system.uptimeSec', 'system.uptimeSeconds']);
+
+      setHardwareField(hardwareFields.cpuClock, formatClock(cpuClockMhz, cpuClockGhz));
+      setHardwareField(hardwareFields.cpuLoad, formatPercent(cpuLoad));
+      setHardwareField(hardwareFields.cpuTemp, formatTemp(cpuTemp));
+
+      const ramText = Number.isFinite(ramUsed) && Number.isFinite(ramTotal)
+        ? formatBytes(ramUsed) + ' / ' + formatBytes(ramTotal)
+        : 'N/A';
+      const diskText = Number.isFinite(diskUsed) && Number.isFinite(diskTotal)
+        ? formatBytes(diskUsed) + ' / ' + formatBytes(diskTotal)
+        : 'N/A';
+
+      setHardwareField(hardwareFields.ram, ramText);
+      setHardwareField(hardwareFields.disk, diskText);
+      setHardwareField(hardwareFields.uptime, formatUptime(uptimeSec));
+
+      const timestamp = readNested(payload, 'timestamp') || readNested(payload, 'updatedAt') || Date.now();
+      const parsedTime = new Date(timestamp);
+      if (hardwareLastUpdate) {
+        if (Number.isFinite(parsedTime.getTime())) {
+          hardwareLastUpdate.textContent = parsedTime.toLocaleTimeString();
+        } else {
+          hardwareLastUpdate.textContent = new Date().toLocaleTimeString();
+        }
+      }
+    }
+
+    async function fetchHardwareTelemetry() {
+      if (!hasHardwareData) {
+        setHardwareHealth('checking', 'Checking');
+      }
+
+      const controller = new AbortController();
+      const timeoutId = window.setTimeout(() => controller.abort(), HARDWARE_TIMEOUT_MS);
+      const requestUrl = hardwareEndpoint + '?telemetry=' + Date.now();
+
+      try {
+        const response = await fetch(requestUrl, {
+          cache: 'no-store',
+          headers: {
+            Accept: 'application/json'
+          },
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            setHardwareHealth('unknown', 'No Endpoint');
+            markHardwareUnavailable('endpoint missing');
+            return;
+          }
+
+          throw new Error('bad-response');
+        }
+
+        const payload = await response.json();
+        renderHardwarePayload(payload);
+        setHardwareHealth('online', 'Live');
+        hasHardwareData = true;
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          setHardwareHealth('error', 'Timeout');
+          markHardwareUnavailable('request timed out');
+        } else {
+          setHardwareHealth('error', 'Offline');
+          markHardwareUnavailable('unreachable');
+        }
+      } finally {
+        window.clearTimeout(timeoutId);
+      }
+    }
+
+    fetchHardwareTelemetry();
+    window.setInterval(fetchHardwareTelemetry, HARDWARE_REFRESH_MS);
 
     const tabs = document.querySelectorAll('.tab');
     const panels = {
