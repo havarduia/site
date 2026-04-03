@@ -7,8 +7,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    try {
+      const savedTheme = localStorage.getItem('kramsen-theme');
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+    } catch (error) {
+      // Ignore storage errors and continue with default theme.
+    }
+  </script>
   <style>
     :root {
+      color-scheme: dark;
       --night: #0b1626;
       --night-2: #11243a;
       --ink: #f4f8ff;
@@ -20,11 +31,106 @@
       --orange-deep: #cf4e15;
       --teal: #2cb6b8;
       --gold: #f4c45e;
+      --grain-line: rgba(241, 246, 255, 0.05);
+      --promo-bg:
+        radial-gradient(circle at 85% 16%, rgba(244, 196, 94, 0.2) 0%, transparent 45%),
+        linear-gradient(150deg, rgba(8, 17, 30, 0.9) 0%, rgba(6, 14, 25, 0.95) 100%);
+      --back-bg: rgba(255, 255, 255, 0.06);
+      --back-bg-hover: rgba(255, 255, 255, 0.11);
+      --kicker-color: #9fe3e4;
+      --kicker-border: rgba(44, 182, 184, 0.4);
+      --kicker-bg: rgba(44, 182, 184, 0.12);
+      --value-note: #ffbe99;
+      --chip-color: #dff7ff;
+      --chip-border: rgba(214, 230, 255, 0.24);
+      --chip-bg: rgba(214, 230, 255, 0.08);
+      --timer-border: rgba(244, 196, 94, 0.4);
+      --timer-bg: rgba(244, 196, 94, 0.09);
+      --timer-sub: #f8dfad;
+      --badge-color: #ffd5c1;
+      --badge-border: rgba(239, 107, 46, 0.4);
+      --badge-bg: rgba(239, 107, 46, 0.13);
+      --field-label: #d4deef;
+      --input-border: rgba(214, 230, 255, 0.24);
+      --input-bg: rgba(214, 230, 255, 0.07);
+      --input-bg-focus: rgba(214, 230, 255, 0.12);
+      --input-shadow: rgba(44, 182, 184, 0.14);
+      --placeholder: #7f8fa8;
+      --fine-print: #91a0b8;
+      --token-color: rgba(255, 255, 255, 0.72);
+      --token-border: rgba(255, 255, 255, 0.22);
+      --token-bg: rgba(255, 255, 255, 0.08);
+      --overlay-bg: rgba(3, 8, 14, 0.82);
+      --player-bg: #030a12;
+      --player-border: rgba(214, 230, 255, 0.2);
+      --close-bg: #f4c45e;
+      --close-color: #091523;
+      --toggle-track-bg: rgba(214, 230, 255, 0.12);
+      --toggle-knob-start: #f4f8ff;
+      --toggle-knob-end: #97d5ff;
+      --toggle-icon-sun: #ffbe99;
+      --toggle-icon-moon: #8be8ea;
       --radius-xl: 28px;
       --radius-lg: 18px;
       --radius-sm: 12px;
       --shadow-lg: 0 30px 80px rgba(1, 7, 15, 0.55);
       --shadow-md: 0 16px 40px rgba(1, 7, 15, 0.45);
+    }
+
+    :root[data-theme='light'] {
+      color-scheme: light;
+      --night: #f7efe1;
+      --night-2: #ebdfcb;
+      --ink: #1f2533;
+      --muted: #556278;
+      --line: rgba(28, 34, 48, 0.2);
+      --glass: rgba(255, 255, 255, 0.7);
+      --glass-strong: rgba(255, 255, 255, 0.84);
+      --orange: #e2652a;
+      --orange-deep: #c34b17;
+      --teal: #0f8e90;
+      --gold: #d68b2c;
+      --grain-line: rgba(28, 34, 48, 0.05);
+      --promo-bg:
+        radial-gradient(circle at 85% 16%, rgba(214, 139, 44, 0.22) 0%, transparent 46%),
+        linear-gradient(150deg, rgba(255, 255, 255, 0.84) 0%, rgba(248, 240, 228, 0.95) 100%);
+      --back-bg: rgba(255, 255, 255, 0.74);
+      --back-bg-hover: rgba(255, 255, 255, 0.94);
+      --kicker-color: #0f8e90;
+      --kicker-border: rgba(15, 142, 144, 0.33);
+      --kicker-bg: rgba(15, 142, 144, 0.09);
+      --value-note: #985028;
+      --chip-color: #2e3649;
+      --chip-border: rgba(28, 34, 48, 0.2);
+      --chip-bg: rgba(255, 255, 255, 0.66);
+      --timer-border: rgba(214, 139, 44, 0.45);
+      --timer-bg: rgba(214, 139, 44, 0.12);
+      --timer-sub: #8a5a26;
+      --badge-color: #b14717;
+      --badge-border: rgba(195, 75, 23, 0.33);
+      --badge-bg: rgba(195, 75, 23, 0.1);
+      --field-label: #4b5972;
+      --input-border: rgba(28, 34, 48, 0.21);
+      --input-bg: rgba(255, 255, 255, 0.82);
+      --input-bg-focus: rgba(255, 255, 255, 0.98);
+      --input-shadow: rgba(15, 142, 144, 0.18);
+      --placeholder: #8b97ac;
+      --fine-print: #65748d;
+      --token-color: rgba(28, 34, 48, 0.68);
+      --token-border: rgba(28, 34, 48, 0.24);
+      --token-bg: rgba(255, 255, 255, 0.56);
+      --overlay-bg: rgba(19, 22, 28, 0.62);
+      --player-bg: #f5ecdd;
+      --player-border: rgba(28, 34, 48, 0.22);
+      --close-bg: #d68b2c;
+      --close-color: #fff;
+      --toggle-track-bg: rgba(255, 255, 255, 0.85);
+      --toggle-knob-start: #ffffff;
+      --toggle-knob-end: #e3eaf7;
+      --toggle-icon-sun: #e2652a;
+      --toggle-icon-moon: #0f8e90;
+      --shadow-lg: 0 26px 68px rgba(56, 45, 30, 0.24);
+      --shadow-md: 0 16px 40px rgba(56, 45, 30, 0.18);
     }
 
     *, *::before, *::after {
@@ -58,9 +164,21 @@
         -36deg,
         transparent,
         transparent 28px,
-        rgba(241, 246, 255, 0.05) 28px,
-        rgba(241, 246, 255, 0.05) 29px
+        var(--grain-line) 28px,
+        var(--grain-line) 29px
       );
+    }
+
+    body,
+    .promo-panel,
+    .form-panel,
+    .field input,
+    .theme-toggle,
+    .back-home,
+    .chip,
+    .timer,
+    .player-shell {
+      transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
     .back-home {
@@ -75,7 +193,7 @@
       letter-spacing: 0.05em;
       text-transform: uppercase;
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.06);
+      background: var(--back-bg);
       border-radius: 999px;
       padding: 9px 13px;
       backdrop-filter: blur(8px);
@@ -85,7 +203,98 @@
 
     .back-home:hover {
       transform: translateY(-1px);
-      background: rgba(255, 255, 255, 0.11);
+      background: var(--back-bg-hover);
+    }
+
+    .theme-toggle {
+      position: fixed;
+      right: 24px;
+      top: 24px;
+      z-index: 10;
+      border: 1px solid var(--line);
+      background: var(--toggle-track-bg);
+      color: var(--ink);
+      border-radius: 999px;
+      width: 66px;
+      height: 34px;
+      padding: 3px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: transform 0.2s, background 0.2s;
+      overflow: hidden;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+      background: var(--back-bg-hover);
+    }
+
+    .theme-toggle .toggle-track {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: block;
+    }
+
+    .theme-toggle .toggle-icon {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.8rem;
+      line-height: 1;
+      transition: opacity 0.2s ease;
+    }
+
+    .theme-toggle .toggle-sun {
+      left: 7px;
+      color: var(--toggle-icon-sun);
+      opacity: 1;
+    }
+
+    .theme-toggle .toggle-moon {
+      right: 8px;
+      color: var(--toggle-icon-moon);
+      opacity: 0.5;
+    }
+
+    .theme-toggle .toggle-knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(140deg, var(--toggle-knob-start), var(--toggle-knob-end));
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.24);
+      transition: transform 0.25s ease;
+    }
+
+    :root[data-theme='dark'] .theme-toggle .toggle-knob {
+      transform: translateX(30px);
+    }
+
+    :root[data-theme='dark'] .theme-toggle .toggle-sun {
+      opacity: 0.5;
+    }
+
+    :root[data-theme='dark'] .theme-toggle .toggle-moon {
+      opacity: 1;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .claim-wrap {
@@ -120,9 +329,7 @@
     }
 
     .promo-panel {
-      background:
-        radial-gradient(circle at 85% 16%, rgba(244, 196, 94, 0.2) 0%, transparent 45%),
-        linear-gradient(150deg, rgba(8, 17, 30, 0.9) 0%, rgba(6, 14, 25, 0.95) 100%);
+      background: var(--promo-bg);
       padding: 34px 30px;
       display: flex;
       flex-direction: column;
@@ -137,9 +344,9 @@
       font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #9fe3e4;
-      border: 1px solid rgba(44, 182, 184, 0.4);
-      background: rgba(44, 182, 184, 0.12);
+      color: var(--kicker-color);
+      border: 1px solid var(--kicker-border);
+      background: var(--kicker-bg);
       border-radius: 999px;
       padding: 6px 10px;
     }
@@ -185,7 +392,7 @@
       font-size: 0.74rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #ffbe99;
+      color: var(--value-note);
       margin-bottom: 12px;
     }
 
@@ -200,17 +407,17 @@
       font-size: 0.69rem;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: #dff7ff;
+      color: var(--chip-color);
       padding: 6px 9px;
       border-radius: 999px;
-      border: 1px solid rgba(214, 230, 255, 0.24);
-      background: rgba(214, 230, 255, 0.08);
+      border: 1px solid var(--chip-border);
+      background: var(--chip-bg);
     }
 
     .timer {
       margin-top: 12px;
-      border: 1px solid rgba(244, 196, 94, 0.4);
-      background: rgba(244, 196, 94, 0.09);
+      border: 1px solid var(--timer-border);
+      background: var(--timer-bg);
       border-radius: var(--radius-lg);
       padding: 14px 16px;
       width: fit-content;
@@ -231,7 +438,7 @@
       font-family: 'IBM Plex Mono', monospace;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: #f8dfad;
+      color: var(--timer-sub);
       font-size: 0.66rem;
     }
 
@@ -253,9 +460,9 @@
       font-size: 0.67rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #ffd5c1;
-      border: 1px solid rgba(239, 107, 46, 0.4);
-      background: rgba(239, 107, 46, 0.13);
+      color: var(--badge-color);
+      border: 1px solid var(--badge-border);
+      background: var(--badge-bg);
       padding: 6px 10px;
       border-radius: 999px;
       margin-bottom: 2px;
@@ -294,13 +501,13 @@
       font-size: 0.65rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #d4deef;
+      color: var(--field-label);
     }
 
     .field input {
       width: 100%;
-      border: 1px solid rgba(214, 230, 255, 0.24);
-      background: rgba(214, 230, 255, 0.07);
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
       border-radius: var(--radius-sm);
       padding: 11px 12px;
       color: var(--ink);
@@ -311,13 +518,13 @@
     }
 
     .field input::placeholder {
-      color: #7f8fa8;
+      color: var(--placeholder);
     }
 
     .field input:focus {
       border-color: rgba(44, 182, 184, 0.7);
-      background: rgba(214, 230, 255, 0.12);
-      box-shadow: 0 0 0 3px rgba(44, 182, 184, 0.14);
+      background: var(--input-bg-focus);
+      box-shadow: 0 0 0 3px var(--input-shadow);
     }
 
     .claim-btn {
@@ -345,7 +552,7 @@
 
     .fine-print {
       font-size: 0.75rem;
-      color: #91a0b8;
+      color: var(--fine-print);
       line-height: 1.68;
       margin-top: 8px;
     }
@@ -359,12 +566,12 @@
       border-radius: 50%;
       display: grid;
       place-items: center;
-      color: rgba(255, 255, 255, 0.72);
+      color: var(--token-color);
       font-family: 'Bebas Neue', sans-serif;
       font-size: 1.6rem;
       letter-spacing: 0.06em;
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--token-border);
+      background: var(--token-bg);
       box-shadow: var(--shadow-md);
       animation: drift 7s ease-in-out infinite;
     }
@@ -395,7 +602,7 @@
       position: fixed;
       inset: 0;
       z-index: 50;
-      background: rgba(3, 8, 14, 0.82);
+      background: var(--overlay-bg);
       backdrop-filter: blur(7px);
       -webkit-backdrop-filter: blur(7px);
       padding: 18px;
@@ -406,8 +613,8 @@
     .player-shell {
       width: min(940px, 100%);
       height: min(76vh, 560px);
-      background: #030a12;
-      border: 1px solid rgba(214, 230, 255, 0.2);
+      background: var(--player-bg);
+      border: 1px solid var(--player-border);
       border-radius: 16px;
       overflow: hidden;
       position: relative;
@@ -426,8 +633,8 @@
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: #091523;
-      background: #f4c45e;
+      color: var(--close-color);
+      background: var(--close-bg);
       cursor: pointer;
     }
 
@@ -462,6 +669,11 @@
         top: 14px;
       }
 
+      .theme-toggle {
+        right: 14px;
+        top: 14px;
+      }
+
       .promo-panel,
       .form-panel {
         padding: 22px 18px;
@@ -475,6 +687,14 @@
 </head>
 <body>
   <a class="back-home" href="index.html">Back to home</a>
+  <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to light mode">
+    <span class="toggle-track" aria-hidden="true">
+      <span class="toggle-icon toggle-sun">&#9728;</span>
+      <span class="toggle-icon toggle-moon">&#9790;</span>
+      <span class="toggle-knob"></span>
+    </span>
+    <span class="visually-hidden">Toggle color theme</span>
+  </button>
 
   <div class="float-token token-a">$</div>
   <div class="float-token token-b">$</div>
@@ -537,6 +757,42 @@
   </div>
 
   <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('theme-toggle');
+    const THEME_KEY = 'kramsen-theme';
+
+    function getPreferredTheme() {
+      const current = root.getAttribute('data-theme');
+      if (current === 'dark' || current === 'light') {
+        return current;
+      }
+
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function applyTheme(theme, shouldPersist) {
+      const isDark = theme === 'dark';
+      root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      themeToggle.setAttribute('data-mode', isDark ? 'dark' : 'light');
+      themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+      themeToggle.setAttribute('aria-pressed', String(isDark));
+
+      if (shouldPersist) {
+        try {
+          localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+        } catch (error) {
+          // Ignore storage errors and keep current in-memory theme.
+        }
+      }
+    }
+
+    applyTheme(getPreferredTheme(), false);
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      applyTheme(currentTheme === 'dark' ? 'light' : 'dark', true);
+    });
+
     function claim() {
       const overlay = document.getElementById('player');
       const player = document.getElementById('yt');

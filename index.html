@@ -7,25 +7,80 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    try {
+      const savedTheme = localStorage.getItem('kramsen-theme');
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+    } catch (error) {
+      // Ignore storage errors and continue with default theme.
+    }
+  </script>
   <style>
     :root {
+      color-scheme: light;
       --paper: #f6efe2;
       --paper-2: #efe3d2;
       --ink: #1c2230;
       --ink-soft: #535b6d;
       --surface: rgba(255, 255, 255, 0.7);
       --surface-strong: rgba(255, 255, 255, 0.9);
+      --surface-lite: rgba(255, 255, 255, 0.84);
+      --surface-icon: rgba(255, 255, 255, 0.85);
+      --surface-tab: rgba(255, 255, 255, 0.76);
       --line: rgba(28, 34, 48, 0.14);
       --line-strong: rgba(28, 34, 48, 0.24);
       --orange: #ef6b2e;
       --orange-deep: #d25217;
       --teal: #0f8e90;
       --teal-soft: #35bfc1;
+      --bg-radial-1: rgba(15, 142, 144, 0.15);
+      --bg-radial-2: rgba(239, 107, 46, 0.16);
+      --bg-radial-3: rgba(15, 142, 144, 0.14);
+      --texture-line: rgba(28, 34, 48, 0.03);
+      --nav-hover-bg: rgba(255, 255, 255, 0.88);
+      --toggle-track-bg: rgba(255, 255, 255, 0.84);
+      --toggle-knob-start: #ffffff;
+      --toggle-knob-end: #e8eef9;
+      --toggle-icon-sun: #ef6b2e;
+      --toggle-icon-moon: #0f8e90;
       --radius-xl: 26px;
       --radius-lg: 18px;
       --radius-sm: 12px;
       --shadow-lg: 0 28px 64px rgba(40, 34, 24, 0.18);
       --shadow-md: 0 14px 34px rgba(40, 34, 24, 0.12);
+    }
+
+    :root[data-theme='dark'] {
+      color-scheme: dark;
+      --paper: #0b1422;
+      --paper-2: #101d31;
+      --ink: #edf4ff;
+      --ink-soft: #a4b2c9;
+      --surface: rgba(12, 24, 40, 0.72);
+      --surface-strong: rgba(15, 28, 45, 0.9);
+      --surface-lite: rgba(17, 31, 50, 0.9);
+      --surface-icon: rgba(17, 31, 50, 0.94);
+      --surface-tab: rgba(17, 31, 50, 0.78);
+      --line: rgba(213, 229, 255, 0.2);
+      --line-strong: rgba(213, 229, 255, 0.34);
+      --orange: #ff8852;
+      --orange-deep: #de5f27;
+      --teal: #2fc4c7;
+      --teal-soft: #63dedd;
+      --bg-radial-1: rgba(47, 196, 199, 0.16);
+      --bg-radial-2: rgba(255, 136, 82, 0.14);
+      --bg-radial-3: rgba(47, 196, 199, 0.12);
+      --texture-line: rgba(230, 240, 255, 0.05);
+      --nav-hover-bg: rgba(230, 240, 255, 0.12);
+      --toggle-track-bg: rgba(16, 30, 49, 0.9);
+      --toggle-knob-start: #dff3ff;
+      --toggle-knob-end: #8fc6ff;
+      --toggle-icon-sun: #ff9b65;
+      --toggle-icon-moon: #71ece8;
+      --shadow-lg: 0 28px 64px rgba(0, 0, 0, 0.45);
+      --shadow-md: 0 14px 34px rgba(0, 0, 0, 0.34);
     }
 
     *, *::before, *::after {
@@ -43,9 +98,9 @@
       color: var(--ink);
       min-height: 100vh;
       background:
-        radial-gradient(circle at 8% 6%, rgba(15, 142, 144, 0.15) 0%, transparent 26%),
-        radial-gradient(circle at 93% 4%, rgba(239, 107, 46, 0.16) 0%, transparent 24%),
-        radial-gradient(circle at 88% 82%, rgba(15, 142, 144, 0.14) 0%, transparent 24%),
+        radial-gradient(circle at 8% 6%, var(--bg-radial-1) 0%, transparent 26%),
+        radial-gradient(circle at 93% 4%, var(--bg-radial-2) 0%, transparent 24%),
+        radial-gradient(circle at 88% 82%, var(--bg-radial-3) 0%, transparent 24%),
         linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
       line-height: 1.6;
       overflow-x: hidden;
@@ -63,9 +118,23 @@
         -35deg,
         transparent,
         transparent 24px,
-        rgba(28, 34, 48, 0.03) 24px,
-        rgba(28, 34, 48, 0.03) 25px
+        var(--texture-line) 24px,
+        var(--texture-line) 25px
       );
+    }
+
+    body,
+    .nav-shell,
+    .hero-panel,
+    .feature-card,
+    .server-stage,
+    .server-panel,
+    .info-box,
+    .service-item,
+    .tab,
+    .btn-secondary,
+    .theme-toggle {
+      transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
     a {
@@ -162,8 +231,94 @@
 
     .nav-links a:hover {
       color: var(--ink);
-      background: rgba(255, 255, 255, 0.88);
+      background: var(--nav-hover-bg);
       transform: translateY(-1px);
+    }
+
+    .theme-toggle {
+      border: 1px solid var(--line);
+      background: var(--toggle-track-bg);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 3px;
+      width: 66px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+      background: var(--surface-strong);
+    }
+
+    .theme-toggle .toggle-track {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: block;
+    }
+
+    .theme-toggle .toggle-icon {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.8rem;
+      line-height: 1;
+      transition: opacity 0.2s ease;
+    }
+
+    .theme-toggle .toggle-sun {
+      left: 7px;
+      color: var(--toggle-icon-sun);
+      opacity: 1;
+    }
+
+    .theme-toggle .toggle-moon {
+      right: 8px;
+      color: var(--toggle-icon-moon);
+      opacity: 0.5;
+    }
+
+    .theme-toggle .toggle-knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(140deg, var(--toggle-knob-start), var(--toggle-knob-end));
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.24);
+      transition: transform 0.25s ease;
+    }
+
+    :root[data-theme='dark'] .theme-toggle .toggle-knob {
+      transform: translateX(30px);
+    }
+
+    :root[data-theme='dark'] .theme-toggle .toggle-sun {
+      opacity: 0.5;
+    }
+
+    :root[data-theme='dark'] .theme-toggle .toggle-moon {
+      opacity: 1;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .nav-links .claim-link {
@@ -251,7 +406,7 @@
 
     .btn-secondary {
       color: var(--ink);
-      background: rgba(255, 255, 255, 0.88);
+      background: var(--surface-strong);
       border: 1px solid var(--line);
     }
 
@@ -341,7 +496,7 @@
     }
 
     .service-item {
-      background: rgba(255, 255, 255, 0.84);
+      background: var(--surface-lite);
       border: 1px solid var(--line);
       border-radius: var(--radius-sm);
       padding: 11px 12px;
@@ -442,7 +597,7 @@
       width: 42px;
       height: 42px;
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.85);
+      background: var(--surface-icon);
       border: 1px solid var(--line);
       display: flex;
       align-items: center;
@@ -481,7 +636,7 @@
 
     .tab {
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.76);
+      background: var(--surface-tab);
       color: var(--ink-soft);
       border-radius: 999px;
       padding: 9px 15px;
@@ -554,7 +709,7 @@
       border: 1px solid var(--line);
       border-radius: var(--radius-sm);
       padding: 12px;
-      background: rgba(255, 255, 255, 0.88);
+      background: var(--surface-strong);
     }
 
     .info-box strong {
@@ -690,6 +845,14 @@
           <a href="#servers">Servers</a>
           <a href="https://map.kramsen.no">Map</a>
           <a class="claim-link" href="claim.html">Claim</a>
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode">
+            <span class="toggle-track" aria-hidden="true">
+              <span class="toggle-icon toggle-sun">&#9728;</span>
+              <span class="toggle-icon toggle-moon">&#9790;</span>
+              <span class="toggle-knob"></span>
+            </span>
+            <span class="visually-hidden">Toggle color theme</span>
+          </button>
         </nav>
       </div>
     </div>
@@ -887,6 +1050,42 @@
   </footer>
 
   <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('theme-toggle');
+    const THEME_KEY = 'kramsen-theme';
+
+    function getPreferredTheme() {
+      const current = root.getAttribute('data-theme');
+      if (current === 'dark' || current === 'light') {
+        return current;
+      }
+
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function applyTheme(theme, shouldPersist) {
+      const isDark = theme === 'dark';
+      root.setAttribute('data-theme', isDark ? 'dark' : 'light');
+      themeToggle.setAttribute('data-mode', isDark ? 'dark' : 'light');
+      themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+      themeToggle.setAttribute('aria-pressed', String(isDark));
+
+      if (shouldPersist) {
+        try {
+          localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+        } catch (error) {
+          // Ignore storage errors and keep current in-memory theme.
+        }
+      }
+    }
+
+    applyTheme(getPreferredTheme(), false);
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      applyTheme(currentTheme === 'dark' ? 'light' : 'dark', true);
+    });
+
     const tabs = document.querySelectorAll('.tab');
     const panels = {
       minecraft: document.getElementById('minecraft-panel'),
