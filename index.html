@@ -458,6 +458,31 @@
       background: rgba(15, 142, 144, 0.08);
       border-radius: 999px;
       padding: 6px 9px;
+      transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .online-pill.pill-online {
+      color: var(--teal);
+      border-color: rgba(15, 142, 144, 0.28);
+      background: rgba(15, 142, 144, 0.08);
+    }
+
+    .online-pill.pill-offline {
+      color: #c4471d;
+      border-color: rgba(196, 71, 29, 0.35);
+      background: rgba(196, 71, 29, 0.12);
+    }
+
+    .online-pill.pill-checking {
+      color: var(--ink-soft);
+      border-color: var(--line);
+      background: var(--surface-tab);
+    }
+
+    .online-pill.pill-unknown {
+      color: #b88012;
+      border-color: rgba(184, 128, 18, 0.36);
+      background: rgba(184, 128, 18, 0.12);
     }
 
     .metric-grid {
@@ -529,6 +554,31 @@
       font-weight: 700;
       letter-spacing: 0.05em;
       text-transform: uppercase;
+      transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .status.status-online {
+      color: var(--teal);
+      background: rgba(15, 142, 144, 0.1);
+      border-color: rgba(15, 142, 144, 0.24);
+    }
+
+    .status.status-offline {
+      color: #c4471d;
+      background: rgba(196, 71, 29, 0.12);
+      border-color: rgba(196, 71, 29, 0.35);
+    }
+
+    .status.status-checking {
+      color: var(--ink-soft);
+      background: var(--surface-tab);
+      border-color: var(--line);
+    }
+
+    .status.status-unknown {
+      color: #b88012;
+      background: rgba(184, 128, 18, 0.12);
+      border-color: rgba(184, 128, 18, 0.36);
     }
 
     section {
@@ -876,7 +926,7 @@
         <aside class="hero-panel reveal delay-2">
           <div class="panel-head">
             <h2>Network Pulse</h2>
-            <span class="online-pill">all systems online</span>
+            <span class="online-pill pill-checking" id="network-status-pill">checking services...</span>
           </div>
           <div class="metric-grid">
             <article class="metric">
@@ -898,21 +948,21 @@
                 <strong>Main site</strong>
                 <span>kramsen.no</span>
               </div>
-              <span class="status">Online</span>
+              <span class="status status-checking" id="status-main-site">Checking</span>
             </article>
             <article class="service-item">
               <div>
                 <strong>Minecraft</strong>
                 <span>mc.kramsen.no</span>
               </div>
-              <span class="status">Online</span>
+              <span class="status status-checking" id="status-minecraft">Checking</span>
             </article>
             <article class="service-item">
               <div>
                 <strong>3D BlueMap</strong>
                 <span>map.kramsen.no</span>
               </div>
-              <span class="status">Online</span>
+              <span class="status status-checking" id="status-map">Checking</span>
             </article>
           </div>
         </aside>
@@ -968,7 +1018,7 @@
               </div>
               <div class="info-box">
                 <strong>Status</strong>
-                <span>Online</span>
+                <span class="status status-checking" id="status-minecraft-panel">Checking</span>
               </div>
               <div class="info-box">
                 <strong>Version</strong>
@@ -1085,6 +1135,171 @@
       const currentTheme = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
       applyTheme(currentTheme === 'dark' ? 'light' : 'dark', true);
     });
+
+    const STATUS_REFRESH_MS = 45000;
+    const networkStatusPill = document.getElementById('network-status-pill');
+    const statusTargets = {
+      mainSite: [document.getElementById('status-main-site')],
+      minecraft: [document.getElementById('status-minecraft'), document.getElementById('status-minecraft-panel')],
+      map: [document.getElementById('status-map')]
+    };
+    let firstStatusRun = true;
+
+    function setServiceState(elements, state, label) {
+      const stateClasses = ['status-online', 'status-offline', 'status-checking', 'status-unknown'];
+      elements.forEach((element) => {
+        if (!element) {
+          return;
+        }
+
+        element.classList.remove(...stateClasses);
+        element.classList.add('status-' + state);
+        element.textContent = label;
+      });
+    }
+
+    function setNetworkPillState(state, label) {
+      if (!networkStatusPill) {
+        return;
+      }
+
+      networkStatusPill.classList.remove('pill-online', 'pill-offline', 'pill-checking', 'pill-unknown');
+      networkStatusPill.classList.add('pill-' + state);
+      networkStatusPill.textContent = label;
+    }
+
+    function getMainSiteCheckUrl() {
+      if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+        return window.location.origin + '/';
+      }
+
+      return 'https://kramsen.no/';
+    }
+
+    function isCrossOrigin(url) {
+      try {
+        const target = new URL(url, window.location.href);
+        return target.origin !== window.location.origin;
+      } catch (error) {
+        return true;
+      }
+    }
+
+    async function checkHttpService(url, timeoutMs) {
+      const controller = new AbortController();
+      const timerId = window.setTimeout(() => controller.abort(), timeoutMs);
+      const useNoCors = isCrossOrigin(url);
+      const targetUrl = url + (url.includes('?') ? '&' : '?') + 'statusCheck=' + Date.now();
+
+      try {
+        const response = await fetch(targetUrl, {
+          method: 'GET',
+          cache: 'no-store',
+          mode: useNoCors ? 'no-cors' : 'cors',
+          signal: controller.signal
+        });
+
+        if (useNoCors) {
+          return true;
+        }
+
+        return response.ok;
+      } catch (error) {
+        return false;
+      } finally {
+        window.clearTimeout(timerId);
+      }
+    }
+
+    async function checkMinecraftService(timeoutMs) {
+      const controller = new AbortController();
+      const timerId = window.setTimeout(() => controller.abort(), timeoutMs);
+
+      try {
+        const response = await fetch('https://api.mcsrvstat.us/2/mc.kramsen.no?statusCheck=' + Date.now(), {
+          cache: 'no-store',
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          return null;
+        }
+
+        const payload = await response.json();
+        if (typeof payload.online !== 'boolean') {
+          return null;
+        }
+
+        return payload.online;
+      } catch (error) {
+        return null;
+      } finally {
+        window.clearTimeout(timerId);
+      }
+    }
+
+    async function refreshLiveStatus() {
+      if (firstStatusRun) {
+        setNetworkPillState('checking', 'checking services...');
+        setServiceState(statusTargets.mainSite, 'checking', 'Checking');
+        setServiceState(statusTargets.minecraft, 'checking', 'Checking');
+        setServiceState(statusTargets.map, 'checking', 'Checking');
+      }
+
+      const [mainSiteOnline, minecraftOnline, mapOnline] = await Promise.all([
+        checkHttpService(getMainSiteCheckUrl(), 6000),
+        checkMinecraftService(6500),
+        checkHttpService('https://map.kramsen.no/', 6500)
+      ]);
+
+      const results = [
+        {
+          state: mainSiteOnline ? 'online' : 'offline',
+          label: mainSiteOnline ? 'Online' : 'Offline',
+          targets: statusTargets.mainSite
+        },
+        {
+          state: minecraftOnline === null ? 'unknown' : (minecraftOnline ? 'online' : 'offline'),
+          label: minecraftOnline === null ? 'Unknown' : (minecraftOnline ? 'Online' : 'Offline'),
+          targets: statusTargets.minecraft
+        },
+        {
+          state: mapOnline ? 'online' : 'offline',
+          label: mapOnline ? 'Online' : 'Offline',
+          targets: statusTargets.map
+        }
+      ];
+
+      let onlineCount = 0;
+      let offlineCount = 0;
+      let unknownCount = 0;
+
+      results.forEach((result) => {
+        setServiceState(result.targets, result.state, result.label);
+        if (result.state === 'online') {
+          onlineCount += 1;
+        }
+        if (result.state === 'offline') {
+          offlineCount += 1;
+        }
+        if (result.state === 'unknown') {
+          unknownCount += 1;
+        }
+      });
+
+      if (offlineCount > 0) {
+        setNetworkPillState('offline', onlineCount + '/3 services online');
+      } else if (unknownCount > 0) {
+        setNetworkPillState('unknown', onlineCount + '/3 online, checking');
+      } else {
+        setNetworkPillState('online', 'all systems online');
+      }
+
+      firstStatusRun = false;
+    }
+
+    refreshLiveStatus();
+    window.setInterval(refreshLiveStatus, STATUS_REFRESH_MS);
 
     const tabs = document.querySelectorAll('.tab');
     const panels = {
