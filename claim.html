@@ -3,291 +3,559 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Free Money — kramsen.no</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <title>Claim Reward | kramsen.no</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --night: #0b1626;
+      --night-2: #11243a;
+      --ink: #f4f8ff;
+      --muted: #a9b6cc;
+      --line: rgba(214, 230, 255, 0.22);
+      --glass: rgba(9, 18, 31, 0.65);
+      --glass-strong: rgba(7, 14, 25, 0.8);
+      --orange: #ef6b2e;
+      --orange-deep: #cf4e15;
+      --teal: #2cb6b8;
+      --gold: #f4c45e;
+      --radius-xl: 28px;
+      --radius-lg: 18px;
+      --radius-sm: 12px;
+      --shadow-lg: 0 30px 80px rgba(1, 7, 15, 0.55);
+      --shadow-md: 0 16px 40px rgba(1, 7, 15, 0.45);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: #0f1e0f;
-      color: #e8f5e8;
       min-height: 100vh;
+      font-family: 'Manrope', sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 14% 12%, rgba(44, 182, 184, 0.22) 0%, transparent 26%),
+        radial-gradient(circle at 86% 14%, rgba(239, 107, 46, 0.24) 0%, transparent 24%),
+        radial-gradient(circle at 75% 90%, rgba(44, 182, 184, 0.18) 0%, transparent 26%),
+        linear-gradient(165deg, var(--night) 0%, var(--night-2) 100%);
+      overflow-x: hidden;
+      padding: 88px 24px 58px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.26;
+      z-index: 0;
+      background: repeating-linear-gradient(
+        -36deg,
+        transparent,
+        transparent 28px,
+        rgba(241, 246, 255, 0.05) 28px,
+        rgba(241, 246, 255, 0.05) 29px
+      );
+    }
+
+    .back-home {
+      position: fixed;
+      left: 24px;
+      top: 24px;
+      z-index: 10;
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 999px;
+      padding: 9px 13px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .back-home:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.11);
+    }
+
+    .claim-wrap {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 16px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(18px);
+      animation: rise 0.75s cubic-bezier(0.2, 1, 0.32, 1) forwards;
+    }
+
+    .panel.delay {
+      animation-delay: 0.14s;
+    }
+
+    @keyframes rise {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .promo-panel {
+      background:
+        radial-gradient(circle at 85% 16%, rgba(244, 196, 94, 0.2) 0%, transparent 45%),
+        linear-gradient(150deg, rgba(8, 17, 30, 0.9) 0%, rgba(6, 14, 25, 0.95) 100%);
+      padding: 34px 30px;
       display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 500px;
+    }
+
+    .kicker {
+      width: fit-content;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9fe3e4;
+      border: 1px solid rgba(44, 182, 184, 0.4);
+      background: rgba(44, 182, 184, 0.12);
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+
+    .promo-panel h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.3rem);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      margin-top: 6px;
+    }
+
+    .promo-panel h1 span {
+      color: var(--gold);
+    }
+
+    .promo-text {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      max-width: 42ch;
+    }
+
+    .value {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    .value-amount {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 14vw, 7.2rem);
+      letter-spacing: 0.03em;
+      line-height: 0.9;
+      color: var(--gold);
+      text-shadow: 0 0 26px rgba(244, 196, 94, 0.2);
+    }
+
+    .value-note {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #ffbe99;
+      margin-bottom: 12px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.69rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #dff7ff;
+      padding: 6px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(214, 230, 255, 0.24);
+      background: rgba(214, 230, 255, 0.08);
+    }
+
+    .timer {
+      margin-top: 12px;
+      border: 1px solid rgba(244, 196, 94, 0.4);
+      background: rgba(244, 196, 94, 0.09);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      width: fit-content;
+      min-width: 230px;
+    }
+
+    .timer strong {
+      font-family: 'Bebas Neue', sans-serif;
+      display: block;
+      font-size: 2.1rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      line-height: 0.9;
+      margin-bottom: 3px;
+    }
+
+    .timer span {
+      font-family: 'IBM Plex Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #f8dfad;
+      font-size: 0.66rem;
+    }
+
+    .form-panel {
+      background: var(--glass-strong);
+      padding: 30px 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      min-height: 500px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .form-badge {
+      width: fit-content;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.67rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #ffd5c1;
+      border: 1px solid rgba(239, 107, 46, 0.4);
+      background: rgba(239, 107, 46, 0.13);
+      padding: 6px 10px;
+      border-radius: 999px;
+      margin-bottom: 2px;
+    }
+
+    .form-panel h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+
+    .form-panel p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.75;
+      margin-bottom: 10px;
+    }
+
+    .fields {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #d4deef;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid rgba(214, 230, 255, 0.24);
+      background: rgba(214, 230, 255, 0.07);
+      border-radius: var(--radius-sm);
+      padding: 11px 12px;
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .field input::placeholder {
+      color: #7f8fa8;
+    }
+
+    .field input:focus {
+      border-color: rgba(44, 182, 184, 0.7);
+      background: rgba(214, 230, 255, 0.12);
+      box-shadow: 0 0 0 3px rgba(44, 182, 184, 0.14);
+    }
+
+    .claim-btn {
+      margin-top: 4px;
+      border: none;
+      border-radius: 999px;
+      width: 100%;
+      padding: 12px 14px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: #091523;
+      background: linear-gradient(120deg, #ffd979, #f4c45e 45%, #efb34a);
+      cursor: pointer;
+      box-shadow: 0 12px 26px rgba(244, 196, 94, 0.34);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .claim-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 28px rgba(244, 196, 94, 0.42);
+    }
+
+    .fine-print {
+      font-size: 0.75rem;
+      color: #91a0b8;
+      line-height: 1.68;
+      margin-top: 8px;
+    }
+
+    .float-token {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: rgba(255, 255, 255, 0.72);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 0.06em;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: var(--shadow-md);
+      animation: drift 7s ease-in-out infinite;
+    }
+
+    .token-a {
+      top: 130px;
+      right: 8%;
+      animation-delay: 0.4s;
+    }
+
+    .token-b {
+      top: 68%;
+      left: 7%;
+      animation-delay: 1.2s;
+    }
+
+    @keyframes drift {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-12px) rotate(7deg);
+      }
+    }
+
+    .player-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(3, 8, 14, 0.82);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+      padding: 18px;
       align-items: center;
       justify-content: center;
-      padding: 80px 24px;
-      overflow-x: hidden;
     }
 
-    /* ── Main card ── */
-    .card {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 24px;
-      padding: 48px 40px;
-      max-width: 460px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    .player-shell {
+      width: min(940px, 100%);
+      height: min(76vh, 560px);
+      background: #030a12;
+      border: 1px solid rgba(214, 230, 255, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
       position: relative;
-      z-index: 10;
+      box-shadow: var(--shadow-lg);
     }
-    .badge { display:inline-block; background:rgba(74,200,100,0.15); border:1px solid rgba(74,200,100,0.3); color:#4ac864; font-size:0.75rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:5px 12px; border-radius:999px; margin-bottom:24px; }
-    .amount { font-size:5rem; font-weight:800; line-height:1; color:#f0c040; margin-bottom:8px; letter-spacing:-0.03em; }
-    .amount span { font-size:2.5rem; vertical-align:super; }
-    h1 { font-size:1.4rem; font-weight:700; margin-bottom:12px; }
-    p  { color:#8aaa8a; font-size:0.92rem; line-height:1.7; margin-bottom:24px; }
-    .fields { display:flex; flex-direction:column; gap:10px; margin-bottom:16px; text-align:left; }
-    .field-label { font-size:0.75rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:#6a8a6a; margin-bottom:4px; }
-    .field-input { width:100%; background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:11px 14px; color:#e8f5e8; font-family:inherit; font-size:0.9rem; outline:none; }
-    .field-input::placeholder { color:#3a5a3a; }
-    .claim-btn { width:100%; padding:15px; background:#4ac864; color:#0a1a0a; font-family:inherit; font-size:1rem; font-weight:800; border:none; border-radius:12px; cursor:pointer; margin-bottom:14px; }
-    .claim-btn:hover { background:#5dd876; }
-    .fine-print { font-size:0.72rem; color:#3a5a3a; line-height:1.6; }
 
-    /* ── Ad base ── */
-    .ad {
-      font-family: Arial, sans-serif;
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      border: none;
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: 0.73rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #091523;
+      background: #f4c45e;
       cursor: pointer;
-      border-radius: 4px;
-      text-align: center;
-      padding: 10px;
-      border: 3px solid;
-      position: fixed;
-      z-index: 50;
-      box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
-      user-select: none;
     }
-    .ad:hover { filter: brightness(1.1); }
-    .ad-lbl  { display:block; font-size:0.48rem; color:#999; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:2px; }
-    .ad-ttl  { font-size:0.82rem; font-weight:900; line-height:1.2; margin-bottom:3px; }
-    .ad-sub  { font-size:0.62rem; color:#444; line-height:1.3; margin-bottom:5px; }
-    .ad-btn  { display:inline-block; color:white; font-size:0.65rem; font-weight:800; padding:4px 10px; border-radius:3px; }
 
-    /* Colours */
-    .y  { background:linear-gradient(135deg,#fff9c4,#ffe082); border-color:#f9a825; }
-    .y .ad-ttl { color:#e65100; } .y .ad-btn { background:#e65100; }
-    .r  { background:linear-gradient(135deg,#ffebee,#ef9a9a); border-color:#c62828; }
-    .r .ad-ttl { color:#b71c1c; } .r .ad-btn { background:#b71c1c; }
-    .b  { background:linear-gradient(135deg,#e3f2fd,#90caf9); border-color:#1565c0; }
-    .b .ad-ttl { color:#0d47a1; } .b .ad-btn { background:#1565c0; }
-    .g  { background:linear-gradient(135deg,#e8f5e9,#a5d6a7); border-color:#2e7d32; }
-    .g .ad-ttl { color:#1b5e20; } .g .ad-btn { background:#2e7d32; }
-    .o  { background:linear-gradient(135deg,#fff3e0,#ffcc80); border-color:#e65100; }
-    .o .ad-ttl { color:#bf360c; } .o .ad-btn { background:#e65100; }
-    .p  { background:linear-gradient(135deg,#f3e5f5,#ce93d8); border-color:#6a1b9a; }
-    .p .ad-ttl { color:#4a148c; } .p .ad-btn { background:#6a1b9a; }
-    .pk { background:linear-gradient(135deg,#fce4ec,#f48fb1); border-color:#880e4f; }
-    .pk .ad-ttl { color:#880e4f; } .pk .ad-btn { background:#880e4f; }
-    .t  { background:linear-gradient(135deg,#e0f2f1,#80cbc4); border-color:#00695c; }
-    .t .ad-ttl { color:#004d40; } .t .ad-btn { background:#00695c; }
-    .lime { background:linear-gradient(135deg,#f9fbe7,#dce775); border-color:#827717; }
-    .lime .ad-ttl { color:#33691e; } .lime .ad-btn { background:#558b2f; }
-    .cy { background:linear-gradient(135deg,#e0f7fa,#80deea); border-color:#00838f; }
-    .cy .ad-ttl { color:#006064; } .cy .ad-btn { background:#00838f; }
-
-    /* Animations */
-    @keyframes fl1  { 0%,100%{opacity:1} 50%{opacity:0.4} }
-    @keyframes fl2  { 0%,100%{background:linear-gradient(135deg,#e3f2fd,#90caf9)} 50%{background:#bbdefb} }
-    @keyframes spin { 0%{transform:rotate(var(--r,0deg))} 100%{transform:rotate(calc(var(--r,0deg) + 4deg))} }
-    @keyframes bop  { 0%,100%{transform:translateY(var(--ty,0px)) rotate(var(--r,0deg))} 50%{transform:translateY(calc(var(--ty,0px) - 8px)) rotate(var(--r,0deg))} }
-    @keyframes shake{ 0%,100%{transform:translateX(var(--tx,0px)) rotate(var(--r,0deg))} 25%{transform:translateX(calc(var(--tx,0px) - 4px)) rotate(var(--r,0deg))} 75%{transform:translateX(calc(var(--tx,0px) + 4px)) rotate(var(--r,0deg))} }
-    @keyframes zoom { 0%,100%{transform:scale(1) rotate(var(--r,0deg))} 50%{transform:scale(1.06) rotate(var(--r,0deg))} }
-    @keyframes marquee { 0%{transform:translateX(100%)} 100%{transform:translateX(-100%)} }
-
-    .fl  { animation: fl1 0.9s infinite; }
-    .bop { animation: bop 1.8s ease-in-out infinite; }
-    .shk { animation: shake 0.5s infinite; }
-    .zm  { animation: zoom 1.4s ease-in-out infinite; }
-
-    /* Fixed banners */
-    .banner-top {
-      position: fixed; top:0; left:0; right:0; height:56px;
-      background: linear-gradient(90deg,#ffe000,#ff3c00,#ffe000);
-      background-size: 200%;
-      animation: bannerscroll 1.5s linear infinite;
-      border-bottom:4px solid #cc0000;
-      display:flex; align-items:center; justify-content:center; gap:14px;
-      font-family:Arial,sans-serif; cursor:pointer; z-index:200;
+    .player-shell iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
-    @keyframes bannerscroll { 0%{background-position:0%} 100%{background-position:200%} }
-    .banner-top .ad-ttl { font-size:1rem; font-weight:900; color:#7a0000; }
-    .banner-top .ad-btn { background:#7a0000; color:#ffe000; font-size:0.8rem; font-weight:900; padding:5px 14px; border-radius:4px; }
 
-    .banner-bot {
-      position:fixed; bottom:0; left:0; right:0; height:50px;
-      background:linear-gradient(90deg,#1a237e,#7b1fa2,#1a237e);
-      background-size:200%;
-      animation: bannerscroll 2s linear infinite;
-      border-top:4px solid #0d47a1;
-      display:flex; align-items:center; justify-content:center; gap:14px;
-      font-family:Arial,sans-serif; cursor:pointer; z-index:200;
+    @media (max-width: 940px) {
+      .claim-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .promo-panel,
+      .form-panel {
+        min-height: unset;
+      }
+
+      .float-token {
+        display: none;
+      }
     }
-    .banner-bot .ad-ttl { font-size:0.9rem; font-weight:900; color:#fff176; }
-    .banner-bot .ad-btn { background:#fff176; color:#1a237e; font-size:0.75rem; font-weight:900; padding:5px 12px; border-radius:4px; }
 
-    /* Scrolling ticker */
-    .ticker {
-      position:fixed; top:56px; left:0; right:0; height:28px;
-      background:#cc0000; overflow:hidden; z-index:199;
-      display:flex; align-items:center;
+    @media (max-width: 600px) {
+      body {
+        padding: 76px 14px 34px;
+      }
+
+      .back-home {
+        left: 14px;
+        top: 14px;
+      }
+
+      .promo-panel,
+      .form-panel {
+        padding: 22px 18px;
+      }
+
+      .value-amount {
+        font-size: 4.4rem;
+      }
     }
-    .ticker-inner { white-space:nowrap; animation:marquee 12s linear infinite; font-family:Arial,sans-serif; font-size:0.78rem; font-weight:700; color:white; }
-    .ticker-inner span { margin:0 32px; }
-
-    /* Popups */
-    .popup {
-      position:fixed; background:white; border:4px solid #cc0000; border-radius:8px;
-      padding:14px; font-family:Arial,sans-serif; z-index:300;
-      box-shadow:0 8px 32px rgba(0,0,0,0.6); cursor:pointer; max-width:240px;
-    }
-    .popup .ad-ttl { color:#cc0000; font-size:0.9rem; margin:4px 0; }
-    .popup .ad-sub { font-size:0.7rem; color:#444; line-height:1.5; }
-    .popup .ad-btn-full { display:block; margin-top:8px; background:#cc0000; color:white; font-weight:700; font-size:0.75rem; padding:7px; text-align:center; border-radius:4px; }
-    .popup .cls { position:absolute; top:4px; right:8px; font-size:1rem; cursor:pointer; color:#999; }
-
-    /* Inline ads */
-    .ad-inline { width:100%; border-radius:6px; padding:10px; margin:10px 0; font-family:Arial,sans-serif; text-align:center; cursor:pointer; border:3px dashed; }
-    .ad-inline .ad-ttl { font-size:0.85rem; font-weight:900; }
-    .ad-inline .ad-sub { font-size:0.68rem; color:#555; }
-    .ai1 { background:#fffde7; border-color:#f9a825; animation:fl1 1s infinite; } .ai1 .ad-ttl{color:#e65100;}
-    .ai2 { background:#fce4ec; border-color:#c2185b; } .ai2 .ad-ttl{color:#880e4f;}
-    .ai3 { background:#e8f5e9; border-color:#2e7d32; animation:fl1 0.7s infinite; } .ai3 .ad-ttl{color:#1b5e20;}
-
-    /* Player */
-    #player { display:none; position:fixed; inset:0; background:#000; z-index:999; }
-    #player iframe { width:100%; height:100%; border:none; }
   </style>
 </head>
 <body>
+  <a class="back-home" href="index.html">Back to home</a>
 
-  <!-- Top banner -->
-  <div class="banner-top" onclick="window.open('https://www.nyan.cat','_blank')">
-    <span class="ad-lbl">Advertisement</span>
-    <span class="ad-ttl">🔥 LOCAL MOM DISCOVERS ONE WEIRD TRICK TO DOUBLE YOUR INCOME 🔥</span>
-    <span class="ad-btn">LEARN MORE</span>
-  </div>
+  <div class="float-token token-a">$</div>
+  <div class="float-token token-b">$</div>
 
-  <!-- Ticker -->
-  <div class="ticker">
-    <div class="ticker-inner">
-      <span>🚨 YOU HAVE BEEN SELECTED</span><span>💰 $1,000 WAITING FOR YOU</span><span>⚡ FREE iPHONE — ONLY 3 LEFT</span><span>🔥 DOCTORS HATE THIS MAN</span><span>💘 HOT SINGLES NEAR YOU</span><span>⚠️ YOUR PC HAS 47 VIRUSES</span><span>🏆 1,000,000TH VISITOR</span><span>🤑 CRYPTO SECRET REVEALED</span><span>🚨 ACT NOW — OFFER EXPIRES</span><span>💊 LOSE 30 LBS IN 2 WEEKS</span>
-    </div>
-  </div>
+  <main class="claim-wrap">
+    <section class="panel promo-panel">
+      <p class="kicker">Founder Reward Window</p>
 
-  <!-- Scattered fixed ads -->
-  <div class="ad y bop"  style="--r:-6deg;--ty:0px;width:160px;top:100px;left:4px;"   onclick="window.open('https://hackertyper.net','_blank')"><span class="ad-lbl">Ad</span><div class="ad-ttl">DOCTORS HATE HIM! $900/day from home</div><div class="ad-sub">Click to find out</div><span class="ad-btn">CLICK HERE</span></div>
-
-  <div class="ad b fl"   style="--r:4deg;width:155px;top:90px;right:2px;"             onclick="window.open('https://isitchristmas.com','_blank')"><span class="ad-lbl">Sponsored</span><div class="ad-ttl">⚡ FREE iPhone 16 Pro — 3 left!</div><div class="ad-sub">You have been selected</div><span class="ad-btn">CLAIM NOW</span></div>
-
-  <div class="ad g zm"   style="--r:3deg;width:150px;top:260px;left:8px;"             onclick="window.open('https://theuselessweb.com','_blank')"><span class="ad-lbl">Ad</span><div class="ad-ttl">Retire at 35 with this method</div><div class="ad-sub">Bankers hate it</div><span class="ad-btn">READ MORE</span></div>
-
-  <div class="ad o shk"  style="--r:-3deg;--tx:0px;width:158px;top:250px;right:5px;" onclick="window.open('https://zombo.com','_blank')"><span class="ad-lbl">Promoted</span><div class="ad-ttl">🏠 Buy a house NO money down</div><div class="ad-sub">Government secret</div><span class="ad-btn">SEE HOW</span></div>
-
-  <div class="ad p bop"  style="--r:7deg;--ty:0px;width:145px;top:430px;left:2px;"   onclick="window.open('https://findtheinvisiblecow.com','_blank')"><span class="ad-lbl">Ad</span><div class="ad-ttl">Single in your area? 😍</div><div class="ad-sub">27 viewed your profile</div><span class="ad-btn">VIEW NOW</span></div>
-
-  <div class="ad pk fl"  style="--r:-5deg;width:152px;top:420px;right:3px;"          onclick="window.open('https://pointerpointer.com','_blank')"><span class="ad-lbl">Ad</span><div class="ad-ttl">This $9 cream is replacing Botox</div><div class="ad-sub">Dermatologists baffled</div><span class="ad-btn">SEE MORE</span></div>
-
-  <div class="ad o zm"   style="--r:5deg;width:148px;top:580px;left:6px;"            onclick="window.open('https://windows93.net','_blank')"><span class="ad-lbl">Sponsored</span><div class="ad-ttl">⚠️ Your PC has 47 VIRUSES!</div><div class="ad-sub">Remove FREE now</div><span class="ad-btn">REMOVE NOW</span></div>
-
-  <div class="ad y shk"  style="--r:-4deg;--tx:0px;width:155px;top:570px;right:4px;" onclick="window.open('https://www.staggeringbeauty.com','_blank')"><span class="ad-lbl">Ad</span><div class="ad-ttl">Play this banned game for 1 min</div><div class="ad-sub">IQ 130+ required</div><span class="ad-btn">PLAY FREE</span></div>
-
-  <div class="ad b bop"  style="--r:8deg;--ty:0px;width:150px;top:730px;left:3px;"  onclick="window.open('https://donothingfor2minutes.com','_blank')"><span class="ad-lbl">Promoted</span><div class="ad-ttl">🎁 $500 Amazon gift card — YOUR name</div><div class="ad-sub">Expires in 14 min</div><span class="ad-btn">CLAIM GIFT</span></div>
-
-  <div class="ad g fl"   style="--r:-7deg;width:153px;top:720px;right:2px;"         onclick="window.open('https://www.yr.no/en/forecast/daily-table/2-3133880/Norway/Aust-Agder/Grimstad/Grimstad','_blank')"><span class="ad-lbl">Ad</span><div class="ad-ttl">Norwegian earns €8,400/mo doing nothing</div><div class="ad-sub">Gov tried to silence him</div><span class="ad-btn">WATCH</span></div>
-
-  <div class="ad t zm"   style="--r:-9deg;width:148px;top:890px;left:5px;"          onclick="window.open('https://cat-bounce.com','_blank')"><span class="ad-lbl">Promoted</span><div class="ad-ttl">🤑 Crypto millionaire shares SECRET</div><div class="ad-sub">$50 → $50,000 overnight</div><span class="ad-btn">INVEST</span></div>
-
-  <div class="ad lime bop" style="--r:6deg;--ty:0px;width:155px;top:880px;right:6px;" onclick="window.open('https://omfgdogs.com','_blank')"><span class="ad-lbl">Ad</span><div class="ad-ttl">💊 Lose 30 lbs in 2 WEEKS</div><div class="ad-sub">As seen on TV</div><span class="ad-btn">LEARN MORE</span></div>
-
-  <div class="ad cy fl"  style="--r:-5deg;width:150px;top:1040px;left:4px;"         onclick="window.open('https://eelslap.com','_blank')"><span class="ad-lbl">Ad</span><div class="ad-ttl">Make $500 TODAY from your phone!</div><div class="ad-sub">47,000 already signed up</div><span class="ad-btn">START NOW</span></div>
-
-  <div class="ad r shk"  style="--r:4deg;--tx:0px;width:152px;top:1030px;right:3px;" onclick="window.open('https://heeeeeeeey.com','_blank')"><span class="ad-lbl">Sponsored</span><div class="ad-ttl">🚨 YOU ARE VISITOR #1,000,000</div><div class="ad-sub">Prize waiting — act fast!</div><span class="ad-btn">CLAIM NOW</span></div>
-
-  <!-- Main card -->
-  <div class="card" id="claim-card">
-    <div class="badge">✦ Limited time offer</div>
-
-    <div class="ad-inline ai1" onclick="window.open('https://www.nyan.cat','_blank')">
-      <span class="ad-lbl">Advertisement</span>
-      <div class="ad-ttl">🚨 CONGRATULATIONS! You are today's lucky visitor!</div>
-      <div class="ad-sub">Spin the wheel to win a prize — limited time!</div>
-    </div>
-
-    <div class="amount"><span>$</span>1,000</div>
-    <h1>You have been selected.</h1>
-    <p>A sum of $1,000 is waiting to be transferred to your account. Fill in your details below to claim your funds within the next 24 hours.</p>
-
-    <div class="ad-inline ai2" onclick="window.open('https://omfgdogs.com','_blank')">
-      <span class="ad-lbl">Sponsored</span>
-      <div class="ad-ttl">💊 Lose 30 lbs in 2 weeks — GUARANTEED</div>
-      <div class="ad-sub">No exercise. No diet. Doctors baffled.</div>
-    </div>
-
-    <div class="fields">
       <div>
-        <div class="field-label">Full name</div>
-        <input class="field-input" type="text" placeholder="John Smith" />
+        <h1>Claim your <span>launch credit</span>.</h1>
+        <p class="promo-text">
+          This page tracks the current reward cycle and lets eligible visitors submit a priority request. Built for style now, wired for more features later.
+        </p>
       </div>
-      <div>
-        <div class="field-label">Email address</div>
-        <input class="field-input" type="text" placeholder="john@example.com" />
+
+      <div class="value">
+        <div class="value-amount">$1,000</div>
+        <div class="value-note">instant transfer tier</div>
       </div>
+
+      <div class="chip-row">
+        <span class="chip">fast verification</span>
+        <span class="chip">single-step claim</span>
+        <span class="chip">priority queue</span>
+      </div>
+
+      <div class="timer">
+        <strong>17:42</strong>
+        <span>remaining in this cycle</span>
+      </div>
+    </section>
+
+    <section class="panel form-panel delay">
+      <span class="form-badge">Priority Claim</span>
+      <h2>Secure your reward slot</h2>
+      <p>Enter your details to submit the request and open the next step instantly.</p>
+
+      <div class="fields">
+        <div class="field">
+          <label for="full-name">Full name</label>
+          <input id="full-name" type="text" placeholder="John Smith" />
+        </div>
+
+        <div class="field">
+          <label for="email">Email address</label>
+          <input id="email" type="email" placeholder="john@example.com" />
+        </div>
+      </div>
+
+      <button class="claim-btn" onclick="claim()">Claim my $1,000</button>
+      <p class="fine-print">By continuing you confirm this is a playful demo flow and agree to the terms and privacy policy.</p>
+    </section>
+  </main>
+
+  <div class="player-overlay" id="player">
+    <div class="player-shell">
+      <button class="close-btn" onclick="closePlayer()">Close</button>
+      <iframe id="yt" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
     </div>
-
-    <div class="ad-inline ai3" onclick="window.open('https://www.google.com/maps/search/people/@58.3405,8.5937,15z','_blank')">
-      <span class="ad-lbl">Ad</span>
-      <div class="ad-ttl">💘 HOT SINGLES in Grimstad want to meet you</div>
-      <div class="ad-sub">Don't miss out — they're waiting RIGHT NOW</div>
-    </div>
-
-    <button class="claim-btn" onclick="claim()">CLAIM MY $1,000 NOW →</button>
-
-    <div class="ad-inline ai1" onclick="window.open('https://cat-bounce.com','_blank')">
-      <span class="ad-lbl">Promoted</span>
-      <div class="ad-ttl">🤑 Turn $50 into $50,000 with ONE crypto trick</div>
-      <div class="ad-sub">Millionaires don't want you to see this</div>
-    </div>
-
-    <div class="fine-print">By clicking claim you agree to our terms, conditions, privacy policy, cookie policy, and that you have read and understood that this is a rickroll.</div>
-  </div>
-
-  <!-- Popups -->
-  <div class="popup bop" style="--ty:0px;bottom:60px;right:10px;" onclick="window.open('https://eelslap.com','_blank')">
-    <span class="cls" onclick="event.stopPropagation();this.parentElement.style.display='none'">✕</span>
-    <span class="ad-lbl">Advertisement</span>
-    <div class="ad-ttl">🚀 Make $500 today from your phone!</div>
-    <div class="ad-sub">No experience needed. 47,000 signed up this week.</div>
-    <div class="ad-btn-full">START EARNING NOW</div>
-  </div>
-
-  <div class="popup fl" style="bottom:60px;left:10px;border-color:#1565c0;" onclick="window.open('https://windows93.net','_blank')">
-    <span class="cls" onclick="event.stopPropagation();this.parentElement.style.display='none'">✕</span>
-    <span class="ad-lbl">System Warning</span>
-    <div class="ad-ttl" style="color:#1565c0;">⚠️ CRITICAL: 47 viruses detected on your device!</div>
-    <div class="ad-sub">Your data may be at risk. Tap to remove immediately.</div>
-    <div class="ad-btn-full" style="background:#1565c0;">REMOVE VIRUSES FREE</div>
-  </div>
-
-  <!-- Bottom banner -->
-  <div class="banner-bot" onclick="window.open('https://heeeeeeeey.com','_blank')">
-    <span class="ad-lbl">Ad</span>
-    <span class="ad-ttl">🏆 YOU ARE THE 1,000,000TH VISITOR — Claim your reward before it expires!</span>
-    <span class="ad-btn">CLAIM NOW</span>
-  </div>
-
-  <!-- Player overlay -->
-  <div id="player">
-    <iframe id="yt" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
   </div>
 
   <script>
     function claim() {
-      document.getElementById('player').style.display = 'block';
-      document.getElementById('yt').src = 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&controls=0&modestbranding=1&rel=0';
+      const overlay = document.getElementById('player');
+      const player = document.getElementById('yt');
+      overlay.style.display = 'flex';
+      player.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&controls=0&modestbranding=1&rel=0';
     }
-  </script>
 
+    function closePlayer() {
+      const overlay = document.getElementById('player');
+      const player = document.getElementById('yt');
+      overlay.style.display = 'none';
+      player.src = '';
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closePlayer();
+      }
+    });
+  </script>
 </body>
 </html>
